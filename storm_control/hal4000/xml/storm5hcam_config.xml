@@ -237,7 +237,7 @@
         <ir_laser>
           <ct_task>
             <source type="string">/Dev3/ctr2</source>
-            <frequency type="float">50000</frequency>
+            <frequency type="float">10000</frequency>
           </ct_task>
         </ir_laser>
 
@@ -449,7 +449,7 @@
 	<camera_id type="int">1</camera_id>
 	<ini_file type="string">uc480_settings.ini</ini_file>
 	<offset_file type="string">C:\software\storm-control\storm_control\hal4000/cam_offsets_storm5.txt</offset_file>
-	<sigma type="float">3.5</sigma>
+	<sigma type="float">7</sigma>
 	<uc480_dll type="string">c:/windows/system32/uc480_64.dll</uc480_dll>
 	<x_width type="int">700</x_width>
 	<y_width type="int">100</y_width>

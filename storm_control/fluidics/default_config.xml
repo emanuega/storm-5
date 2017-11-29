@@ -78,12 +78,12 @@
     <valve_cmd name = "2SSC">
        <valve_pos valve_ID = "1" port_ID = "8"></valve_pos>
        <valve_pos valve_ID = "2" port_ID = "8"></valve_pos>
-       <valve_pos valve_ID = "3" port_ID = "6"></valve_pos>
+       <valve_pos valve_ID = "3" port_ID = "7"></valve_pos>
     </valve_cmd>
     <valve_cmd name = "Imaging Buffer">
        <valve_pos valve_ID = "1" port_ID = "8"></valve_pos>
        <valve_pos valve_ID = "2" port_ID = "8"></valve_pos>
-       <valve_pos valve_ID = "3" port_ID = "7"></valve_pos>
+       <valve_pos valve_ID = "3" port_ID = "6"></valve_pos>
     </valve_cmd>
     <valve_cmd name = "TCEP">
        <valve_pos valve_ID = "1" port_ID = "8"></valve_pos>
@@ -142,8 +142,8 @@
      <protocol name = "Hybridize 1">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 1</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -152,8 +152,8 @@
      <protocol name = "Hybridize 2">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 2</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -162,8 +162,8 @@
      <protocol name = "Hybridize 3">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 3</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -172,8 +172,8 @@
      <protocol name = "Hybridize 4">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 4</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -182,8 +182,8 @@
      <protocol name = "Hybridize 5">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 5</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -192,8 +192,8 @@
      <protocol name = "Hybridize 6">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 6</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -202,8 +202,8 @@
      <protocol name = "Hybridize 7">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 7</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -212,8 +212,8 @@
      <protocol name = "Hybridize 8">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 8</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -222,8 +222,8 @@
      <protocol name = "Hybridize 9">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 9</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -232,8 +232,8 @@
      <protocol name = "Hybridize 10">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 10</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -241,8 +241,8 @@
      <protocol name = "Hybridize 11">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 11</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -250,8 +250,8 @@
      <protocol name = "Hybridize 12">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 12</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -259,8 +259,8 @@
      <protocol name = "Hybridize 13">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 13</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -268,8 +268,8 @@
      <protocol name = "Hybridize 14">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 14</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -277,8 +277,8 @@
      <protocol name = "Hybridize 15">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 15</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -286,8 +286,8 @@
      <protocol name = "Hybridize 16">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Hybridization 16</valve>
-	<pump duration = "200">Very Fast Flow</pump>
-	<pump duration = "900">Stop Flow</pump>
+	<pump duration = "400">Very Fast Flow</pump>
+	<pump duration = "700">Stop Flow</pump>
 	<valve duration = "10">Wash</valve>
 	<pump duration = "100">Very Fast Flow</pump>
 	<pump duration = "10">Stop Flow</pump>
@@ -296,7 +296,7 @@
 	<protocol name = "Cleave">
         <pump duration = "0">Stop Flow</pump>
         <valve duration = "5">TCEP</valve>
-        <pump duration = "180">Normal Flow</pump>
+        <pump duration = "200">Very Fast Flow</pump>
 	<pump duration = "900">Stop Flow</pump>
         <valve duration = "5">2SSC</valve>
 	<pump duration = "180">Normal Flow</pump>
@@ -306,19 +306,19 @@
      <protocol name = "Flow Image Buffer">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">Imaging Buffer</valve>
-	<pump duration = "180">Normal Flow</pump>
+	<pump duration = "300">Normal Flow</pump>
 	<pump duration = "30">Stop Flow</pump>
 	</protocol>
 
      <protocol name = "Flow SSC">
         <pump duration = "0">Stop Flow</pump>
 	<valve duration = "10">2SSC</valve>
-	<pump duration = "180">Normal Flow</pump>
+	<pump duration = "180">Very Fast Flow</pump>
 	<pump duration = "30">Stop Flow</pump>
 	</protocol>
 
 
-     <protocol name = "Wash Hyb">
+     <protocol name = "Wash All">
 	<pump duration = "0">Very Fast Flow</pump>
 	<valve duration = "100">Hybridization 1</valve>
 	<valve duration = "100">Hybridization 2</valve>
@@ -336,28 +336,36 @@
 	<valve duration = "100">Hybridization 14</valve>
 	<valve duration = "100">Hybridization 15</valve>
 	<valve duration = "100">Hybridization 16</valve>
+	<valve duration = "40">2SSC</valve>
+	<valve duration = "40">Imaging Buffer</valve>
+	<valve duration = "40">Wash</valve>
+	<valve duration = "40">TCEP</valve>
 	<pump duration = "0">Stop Flow</pump>
 </protocol>
 
 
-     <protocol name = "Prime Hyb">
+     <protocol name = "Prime All">
 	<pump duration = "0">Very Fast Flow</pump>
-	<valve duration = "20">Hybridization 1</valve>
-	<valve duration = "20">Hybridization 2</valve>
-	<valve duration = "20">Hybridization 3</valve>
-	<valve duration = "20">Hybridization 4</valve>
-	<valve duration = "20">Hybridization 5</valve>
-	<valve duration = "20">Hybridization 6</valve>
-	<valve duration = "20">Hybridization 7</valve>
-	<valve duration = "20">Hybridization 8</valve>
-	<valve duration = "20">Hybridization 9</valve>
-	<valve duration = "20">Hybridization 10</valve>
-	<valve duration = "20">Hybridization 11</valve>
-	<valve duration = "20">Hybridization 12</valve>
-	<valve duration = "20">Hybridization 13</valve>
-	<valve duration = "20">Hybridization 14</valve>
-	<valve duration = "20">Hybridization 15</valve>
-	<valve duration = "20">Hybridization 16</valve>
+	<valve duration = "40">Hybridization 1</valve>
+	<valve duration = "40">Hybridization 2</valve>
+	<valve duration = "40">Hybridization 3</valve>
+	<valve duration = "40">Hybridization 4</valve>
+	<valve duration = "40">Hybridization 5</valve>
+	<valve duration = "40">Hybridization 6</valve>
+	<valve duration = "40">Hybridization 7</valve>
+	<valve duration = "40">Hybridization 8</valve>
+	<valve duration = "40">Hybridization 9</valve>
+	<valve duration = "40">Hybridization 10</valve>
+	<valve duration = "40">Hybridization 11</valve>
+	<valve duration = "40">Hybridization 12</valve>
+	<valve duration = "40">Hybridization 13</valve>
+	<valve duration = "40">Hybridization 14</valve>
+	<valve duration = "40">Hybridization 15</valve>
+	<valve duration = "40">Hybridization 16</valve>
+	<valve duration = "40">2SSC</valve>
+	<valve duration = "40">Imaging Buffer</valve>
+	<valve duration = "40">Wash</valve>
+	<valve duration = "40">TCEP</valve>
 	<pump duration = "0">Stop Flow</pump>
 	</protocol>
 
