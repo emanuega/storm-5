@@ -186,11 +186,14 @@
 	<!-- This is the default timing source to use while filming. "Oversampled"
 	     films will use the counter for timing. The counter is driven by the
 	     camera fire pin. Other films will just use the camera fire pin directly.
+		 rising_edge specifies whether the counter is incremented upon the 
+		 rising (True) or falling (False) edge of the camera signal
 	-->
 	<timing>
 	  <camera_fire_pin type="string">/Dev3/PFI0</camera_fire_pin>
 	  <counter type="string">/Dev3/ctr0</counter>
 	  <counter_out type="string">/Dev3/PFI12</counter_out>
+	  <rising_edge type="boolean">True</rising_edge>
 	</timing>
 
 	<!-- These are the things that we provide DAQ functionality for.
