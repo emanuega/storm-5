@@ -2,7 +2,7 @@
 <config>
 
   <!-- The starting directory. -->
-  <directory type="directory">E:/SSD_Data/</directory>
+  <directory type="directory">C:/Data/</directory>
   
   <!-- The setup name -->
   <setup_name type="string">hbaic-pgrey</setup_name>
@@ -138,7 +138,7 @@
 	  <!-- These can be changed / editted. -->
 
 	  <!-- This is the extension to use (if any) when saving data from this camera. -->
-	  <extension type="string">c1</extension>
+	  <extension type="string">pgrey</extension>
 	  
 	  <!-- Whether or not data from this camera is saved during filming. -->
 	  <saved type="boolean">True</saved>
@@ -151,28 +151,31 @@
       <class_name type="string">Camera</class_name>
       <module_name type="string">storm_control.hal4000.camera.camera</module_name>
       <camera>
-	<master type="boolean">False</master>
-	<class_name type="string">PointGreyCameraControl</class_name>
-	<module_name type="string">storm_control.hal4000.camera.pointgreyCameraControl</module_name>
+	<master type="boolean">True</master>
+	<class_name type="string">AndorCameraControl</class_name>
+	<module_name type="string">storm_control.hal4000.camera.andorCameraControl</module_name>
 	<parameters>
 	  
-	  <!-- The location of the Point Grey DLL -->
-	  <pgrey_dll type="string">C:/Program Files/Point Grey Research/Spinnaker/bin64/vs2013/SpinnakerC_v120.dll</pgrey_dll>
+	  <!-- The location of the Andor DLL. -->
+	  <andor_path type="string">C:/Program Files/Andor Driver Pack 2/</andor_path>
+
+	  <!-- The name of the Andor DLL. -->
+	  <andor_dll type="string">atmcd64d.dll</andor_dll>
 
 	  <!-- Which camera to use -->
-	  <camera_id type="int">1</camera_id>
+	  <camera_id type="int">0</camera_id>
 
 	  <!-- These are the display defaults, not the camera range. -->
-	  <default_max type="int">200</default_max> 
-	  <default_min type="int">30</default_min>
+	  <default_max type="int">2000</default_max> 
+	  <default_min type="int">100</default_min>
 	  <flip_horizontal type="boolean">False</flip_horizontal>
 	  <flip_vertical type="boolean">False</flip_vertical>
-	  <transpose type="boolean">True</transpose>
+	  <transpose type="boolean">False</transpose>
 
 	  <!-- These can be changed / editted. -->
 
 	  <!-- This is the extension to use (if any) when saving data from this camera. -->
-	  <extension type="string">c2</extension>
+	  <extension type="string"></extension>
 	  
 	  <!-- Whether or not data from this camera is saved during filming. -->
 	  <saved type="boolean">True</saved>
@@ -180,75 +183,7 @@
 	</parameters>
       </camera>
     </camera2>
-
-    <camera3>
-      <class_name type="string">Camera</class_name>
-      <module_name type="string">storm_control.hal4000.camera.camera</module_name>
-      <camera>
-	<master type="boolean">False</master>
-	<class_name type="string">PointGreyCameraControl</class_name>
-	<module_name type="string">storm_control.hal4000.camera.pointgreyCameraControl</module_name>
-	<parameters>
-	  
-	  <!-- The location of the Point Grey DLL -->
-	  <pgrey_dll type="string">C:/Program Files/Point Grey Research/Spinnaker/bin64/vs2013/SpinnakerC_v120.dll</pgrey_dll>
-
-	  <!-- Which camera to use -->
-	  <camera_id type="int">2</camera_id>
-
-	  <!-- These are the display defaults, not the camera range. -->
-	  <default_max type="int">200</default_max> 
-	  <default_min type="int">30</default_min>
-	  <flip_horizontal type="boolean">False</flip_horizontal>
-	  <flip_vertical type="boolean">False</flip_vertical>
-	  <transpose type="boolean">True</transpose>
-
-	  <!-- These can be changed / editted. -->
-
-	  <!-- This is the extension to use (if any) when saving data from this camera. -->
-	  <extension type="string">c3</extension>
-	  
-	  <!-- Whether or not data from this camera is saved during filming. -->
-	  <saved type="boolean">True</saved>
-
-	</parameters>
-      </camera>
-    </camera3>       
-
-    <camera4>
-      <class_name type="string">Camera</class_name>
-      <module_name type="string">storm_control.hal4000.camera.camera</module_name>
-      <camera>
-	<master type="boolean">False</master>
-	<class_name type="string">PointGreyCameraControl</class_name>
-	<module_name type="string">storm_control.hal4000.camera.pointgreyCameraControl</module_name>
-	<parameters>
-	  
-	  <!-- The location of the Point Grey DLL -->
-	  <pgrey_dll type="string">C:/Program Files/Point Grey Research/Spinnaker/bin64/vs2013/SpinnakerC_v120.dll</pgrey_dll>
-
-	  <!-- Which camera to use -->
-	  <camera_id type="int">3</camera_id>
-
-	  <!-- These are the display defaults, not the camera range. -->
-	  <default_max type="int">200</default_max> 
-	  <default_min type="int">30</default_min>
-	  <flip_horizontal type="boolean">True</flip_horizontal>
-	  <flip_vertical type="boolean">False</flip_vertical>
-	  <transpose type="boolean">True</transpose>
-
-	  <!-- These can be changed / editted. -->
-
-	  <!-- This is the extension to use (if any) when saving data from this camera. -->
-	  <extension type="string">c4</extension>
-	  
-	  <!-- Whether or not data from this camera is saved during filming. -->
-	  <saved type="boolean">True</saved>
-
-	</parameters>
-      </camera>
-    </camera4>
-
+    
     <!-- Crystal Technologies AOTF (Telnet) -->
     <ctech_aotf>
       <module_name type="string">storm_control.sc_hardware.crystalTechnologies.aotfModule</module_name>
@@ -313,7 +248,7 @@
 	<galvo>
 	  <wv_task>
 	    <clock>/Dev1/ctr0out</clock>
-	    <lines>/Dev1/ao0,/Dev/ao1</lines>
+	    <lines>/Dev1/ao0,/Dev1/ao1</lines>
 	  </wv_task>
 	</galvo>
 
@@ -362,6 +297,16 @@
       </configuration>
     </daq>
 
+    <!-- Filter wheel control GUI. -->
+    <filter_wheel>
+      <class_name type="string">FilterWheel</class_name>
+      <module_name type="string">storm_control.hal4000.miscControl.filterWheel</module_name>
+      <configuration>
+	<filter_wheel_fn type="string">prior_controller.filter_wheel1</filter_wheel_fn>
+	<filters type="string">Penta,405,488,560,647,750,None</filters>
+      </configuration>
+    </filter_wheel>
+
     <!-- Focus lock control GUI. -->
     <focuslock>
       <class_name type="string">FocusLock</class_name>
@@ -384,6 +329,22 @@
 	</parameters>
       </configuration>
     </focuslock>
+
+    <!-- Galvo control GUI. -->
+    <galvo>
+      <class_name type="string">Galvo</class_name>
+      <module_name type="string">storm_control.hal4000.miscControl.galvoControl</module_name>
+      <configuration>
+	<x_amp type="float">1.0</x_amp>
+	<x_freq type="int">700</x_freq>
+	<x_offset type="float">0.0</x_offset>
+	<y_amp type="float">1.0</y_amp>
+	<y_freq type="int">100</y_freq>
+	<y_offset type="float">0.0</y_offset>
+	<scan_fn type="string">daq.galvo.wv_task</scan_fn>
+	<sampling_rate type="float">2500.0</sampling_rate>
+      </configuration>
+    </galvo>
     
     <!-- Illumination (lasers, shutters, etc) control GUI. -->
     <illumination>
@@ -461,10 +422,10 @@
     <!-- Ludl stage -->
     <ludl_stage>
       <module_name type="string">storm_control.sc_hardware.ludl.ludlModule</module_name>
-      <class_name type="string">LudlStageRS232</class_name>
+      <class_name type="string">LudlStageTCP</class_name>
       
       <configuration>
-	<com_port type="string">COM29</com_port>
+	<ip_address type="string">192.168.100.1</ip_address>
       </configuration>
     </ludl_stage>
     
@@ -498,12 +459,27 @@
       </configuration>
     </obis405>
 
+    <!-- Prior filter wheel controller. -->
+    <prior_controller>
+      <module_name type="string">storm_control.sc_hardware.prior.priorModule</module_name>
+      <class_name type="string">PriorController</class_name>
+
+      <configuration>
+	<baudrate type="int">115200</baudrate>
+	<port type="string">COM7</port>
+	<velocity type="float">2.0</velocity>
+	<filter_wheel1>
+	  <maximum type="int">10</maximum>
+	</filter_wheel1>
+      </configuration>
+    </prior_controller>    
+
     <!-- sCMOS calibration module -->
     <scmos_cal>
       <module_name type="string">storm_control.hal4000.miscControl.scmosCalibration</module_name>
       <class_name type="string">SCMOSCalibration</class_name>
     </scmos_cal>
-    
+        
     <!-- Stage control GUI -->
     <stage>
       <class_name type="string">Stage</class_name>
