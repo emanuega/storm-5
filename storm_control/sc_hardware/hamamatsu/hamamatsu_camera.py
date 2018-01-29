@@ -389,6 +389,7 @@ class HamamatsuCamera(object):
         return properties
 
     def getFrames(self):
+        print('hcam getting frames')
         """
         Gets all of the available frames.
     
@@ -413,7 +414,7 @@ class HamamatsuCamera(object):
 
             frames.append(hc_data)
 
-
+        print('hcam returning frames')
         return [frames, [self.frame_x, self.frame_y]]
 
     def getModelInfo(self, camera_id):
@@ -585,12 +586,13 @@ class HamamatsuCamera(object):
             return False
 
     def newFrames(self):
+        print('hcam new frames')
         """
         Return a list of the ids of all the new frames since the last check.
         Returns an empty list if the camera has already stopped and no frames
         are available.
     
-        This will block waiting for at least one new frame.
+        This will block waiting for at least one new frame
         """
 
         captureStatus = ctypes.c_int32(0)
@@ -598,7 +600,9 @@ class HamamatsuCamera(object):
             self.camera_handle, ctypes.byref(captureStatus)))
 
         # Wait for a new frame if the camera is acquiring.
-        if captureStatus == DCAMCAP_STATUS_BUSY:
+        print('hcam capture status ' + str(captureStatus))
+        if captureStatus.value == DCAMCAP_STATUS_BUSY:
+            print('hcam waiting for new frame')
             paramstart = DCAMWAIT_START(
                     0, 
                     DCAMWAIT_RECEVENT_MISSED | DCAMWAIT_RECEVENT_STOPPED, 
@@ -701,6 +705,7 @@ class HamamatsuCamera(object):
             self.setPropertyValue("subarray_mode", "ON")
 
     def setACQMode(self, mode, number_frames = None):
+        print('hcam Setting acquisition mode')
         '''
         Set the acquisition mode to either run until aborted or to 
         stop after acquiring a set number of frames.
@@ -722,6 +727,7 @@ class HamamatsuCamera(object):
 
 
     def startAcquisition(self):
+        print('hcam starting acquisition')
         """
         Start data acquisition.
         """
@@ -747,11 +753,13 @@ class HamamatsuCamera(object):
                                     DCAMCAP_START_SEQUENCE),
                              "dcamcap_start")
         if self.acquisition_mode is "fixed_length":
+            print('hcam start now')
             self.checkStatus(dcam.dcamcap_start(self.camera_handle,
                                     DCAMCAP_START_SNAP),
                              "dcamcap_start")
 
     def stopAcquisition(self):
+        print('hcam stopping acquistion')
         """
         Stop data acquisition.
         """

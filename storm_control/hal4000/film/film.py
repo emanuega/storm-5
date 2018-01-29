@@ -412,6 +412,7 @@ class Film(halModule.HalModule):
                                                data = {"live mode" : state}))
 
     def handleNewFrame(self, frame_number):
+        print('New frames: ' + str(frame_number))
         self.number_frames = frame_number + 1
 
         # Update display of the number of frames.
@@ -556,6 +557,7 @@ class Film(halModule.HalModule):
             self.view.setShutters(message.getData()["filename"])
 
         elif message.isType("ready to film"):
+            print('Ready: ' + message.getSourceName())
             self.waiting_on.remove(message.getSourceName())
 
             # All modules are ready, so start the cameras.
@@ -629,10 +631,12 @@ class Film(halModule.HalModule):
         # Start master cameras last.
         for camera in self.camera_functionalities:
             if camera.isCamera() and camera.isMaster():
+                print('Starting camera')
                 self.sendMessage(halMessage.HalMessage(m_type = "start camera",
                                                        data = {"camera" : camera.getCameraName()}))
 
     def startFilmingLevel1(self, film_settings):
+        print('Start filming level 1')
         """
         First, tell the cameras to stop.
      
@@ -646,6 +650,7 @@ class Film(halModule.HalModule):
         self.stopCameras()
 
     def startFilmingLevel2(self):
+        print('Start filming level 2')
         """
         Then once all the cameras are stopped configure the imagewriters 
         for all of the feeds, and send the 'start film' message, followed 
@@ -672,6 +677,7 @@ class Film(halModule.HalModule):
         
         # Start filming.
         self.waiting_on = copy.copy(self.wait_for)
+        print('Send start message')
         self.sendMessage(halMessage.HalMessage(sync = True,
                                                m_type = "start film",
                                                data = {"film settings" : self.film_settings}))
@@ -700,6 +706,7 @@ class Film(halModule.HalModule):
                                                        finalizer = self.handleStopCamera))
 
     def stopFilmingLevel1(self):
+        print('Stop filming level 1')
         """
         Tell the cameras to stop, then wait until we get the
         'camera stopped' message from all the cameras.
@@ -713,6 +720,7 @@ class Film(halModule.HalModule):
         self.stopCameras()
 
     def stopFilmingLevel2(self):
+        print ('Stop filming level 2')
         """
         Once all the cameras/feeds have stopped close the imagewriters
         and restart the cameras (if we are in live mode).
