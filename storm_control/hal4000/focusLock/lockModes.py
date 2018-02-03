@@ -2,7 +2,6 @@
 """
 These classes implement various focus lock modes. They determine
 all the behaviors of the focus lock.
-
 Hazen 05/15
 """
 import numpy
@@ -174,6 +173,10 @@ class LockedMixin(object):
                                     name = "minimum_sum",
                                     value = -1.0))
 
+        p.add(params.ParameterFloat(description = "Gain for the focus lock feedback loop",
+                name="gain",
+                value=-0.9))
+
     def getLockTarget(self):
         return self.lm_target
         
@@ -214,6 +217,7 @@ class LockedMixin(object):
         self.lm_counter = 0
         self.lm_min_sum = p.get("minimum_sum")
         self.lm_offset_threshold = 1.0e-3 * p.get("offset_threshold")
+        self.lm_gain = p.get("gain")
 
     def startLock(self):
         self.lm_counter = 0
@@ -260,7 +264,6 @@ class ScanMixin(object):
     """
     This will do a (local) scan for the z position with the correct
     offset.
-
     FIXME: Is this the right thing for this behavior to do?
     """
     sm_pname = "scan"
@@ -403,19 +406,15 @@ class ScanMixin(object):
 class LockMode(QtCore.QObject):
     """
     The base class for all the lock modes.
-
     Modes are 'state' of the focus lock. They are called when there
     is a new QPD reading or a new frame (from the camera/feed that
     is being used to time the acquisition).
-
     The modes have control of the zstage to do the actual stage
     moves. Note that the requests to move the zstage could be
     sent as fast as the QPD reads and/or new frames are arriving,
     so if the zstage is slow it could get overwhelmed by move requests.
-
     The modes share a single parameter object. The parameters specific
     to a particular mode are stored under a mode specific attribute.
-
     To avoid name clashes as there are a lot of attributes (too many?),
     sub-class attribute names are all prefixed with a sub-class
     specific string.
@@ -459,7 +458,6 @@ class LockMode(QtCore.QObject):
         """
         Behaviors that end should call this method when they have
         finished, and indicate whether they succeeded or failed.
-
         The mode will go into the idle state and wait for 
         lockControl.LockControl to tell it what to do next.
         """
