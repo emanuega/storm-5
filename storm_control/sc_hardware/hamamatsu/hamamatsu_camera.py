@@ -18,7 +18,6 @@ import numpy
 import storm_control.sc_library.halExceptions as halExceptions
 
 # Hamamatsu constants.
-DCAMCAP_EVENT_FRAMEREADY = int("0x0002", 0)
 
 # DCAM4 API.
 DCAMERR_ERROR = 0
@@ -42,6 +41,9 @@ DCAMCAP_STATUS_BUSY = int("0x00000001", 0)
 DCAMCAP_STATUS_READY = int("0x00000002", 0)
 DCAMCAP_STATUS_STABLE = int("0x00000003", 0)
 DCAMCAP_STATUS_UNSTABLE = int("0x00000004", 0)
+
+DCAMWAIT_CAPEVENT_FRAMEREADY = int("0x0002", 0)
+DCAMWAIT_CAPEVENT_STOPPED = int("0x0010", 0)
 
 DCAMWAIT_RECEVENT_MISSED = int("0x00000200", 0)
 DCAMWAIT_RECEVENT_STOPPED = int("0x00000400", 0)
@@ -279,6 +281,7 @@ class HamamatsuCamera(object):
 
         self.acquisition_mode = "run_till_abort"
         self.number_frames = 0
+
 
 
         # Get camera model.
@@ -600,14 +603,12 @@ class HamamatsuCamera(object):
             self.camera_handle, ctypes.byref(captureStatus)))
 
         # Wait for a new frame if the camera is acquiring.
-        print('hcam capture status ' + str(captureStatus))
         if captureStatus.value == DCAMCAP_STATUS_BUSY:
-            print('hcam waiting for new frame')
             paramstart = DCAMWAIT_START(
                     0, 
-                    DCAMWAIT_RECEVENT_MISSED | DCAMWAIT_RECEVENT_STOPPED, 
-                    DCAMCAP_EVENT_FRAMEREADY, 
-                    DCAMWAIT_TIMEOUT_INFINITE)
+                    0, 
+                    DCAMWAIT_CAPEVENT_FRAMEREADY | DCAMWAIT_CAPEVENT_STOPPED, 
+                    100)
             paramstart.size = ctypes.sizeof(paramstart)
             self.checkStatus(dcam.dcamwait_start(self.wait_handle,
                                             ctypes.byref(paramstart)),
@@ -705,7 +706,6 @@ class HamamatsuCamera(object):
             self.setPropertyValue("subarray_mode", "ON")
 
     def setACQMode(self, mode, number_frames = None):
-        print('hcam Setting acquisition mode')
         '''
         Set the acquisition mode to either run until aborted or to 
         stop after acquiring a set number of frames.
@@ -727,7 +727,6 @@ class HamamatsuCamera(object):
 
 
     def startAcquisition(self):
-        print('hcam starting acquisition')
         """
         Start data acquisition.
         """
@@ -742,7 +741,11 @@ class HamamatsuCamera(object):
             n_buffers = int(2.0*self.getPropertyValue("internal_frame_rate")[0])
         elif self.acquisition_mode is "fixed_length":
             n_buffers = self.number_frames
+
         self.number_image_buffers = n_buffers
+
+	
+
         self.checkStatus(dcam.dcambuf_alloc(self.camera_handle,
                                   ctypes.c_int32(self.number_image_buffers)),
                          "dcambuf_alloc")
@@ -753,13 +756,11 @@ class HamamatsuCamera(object):
                                     DCAMCAP_START_SEQUENCE),
                              "dcamcap_start")
         if self.acquisition_mode is "fixed_length":
-            print('hcam start now')
             self.checkStatus(dcam.dcamcap_start(self.camera_handle,
                                     DCAMCAP_START_SNAP),
                              "dcamcap_start")
 
     def stopAcquisition(self):
-        print('hcam stopping acquistion')
         """
         Stop data acquisition.
         """
@@ -859,7 +860,6 @@ class HamamatsuCameraMR(HamamatsuCamera):
                 self.number_image_buffers = self.number_frames
             else:
                 self.number_image_buffers = n_buffers
-
 
             # Allocate new image buffers.
             ptr_array = ctypes.c_void_p * self.number_image_buffers
