@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <settings><!-- Default kilroy settings -->
   <!-- Valve parameters -->
-  <valve_type type="string">Titan</valve_type>
-  <valves_com_port type="string">COM39</valves_com_port>	<!-- COM port of serial connection to valves -->  
+  <valve_type type="string">Hamilton</valve_type>
+  <valves_com_port type="string">COM37</valves_com_port>	<!-- COM port of serial connection to valves -->  
   <num_simulated_valves type="int">0</num_simulated_valves><!-- Number of valves to simulate (Defaults to 0) -->
 
   <!-- Pump parameters -->
