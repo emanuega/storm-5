@@ -16,7 +16,6 @@ class TitanValve(AbstractValve):
 
         self.com_port = com_port
         self.verbose = verbose
-        self.read_length = 64
 
         self.serial = serial.Serial(port = self.com_port, 
                 baudrate = 9600,
