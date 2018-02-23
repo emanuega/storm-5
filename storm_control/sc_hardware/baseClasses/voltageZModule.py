@@ -62,10 +62,19 @@ class VoltageZFunctionality(hardwareModule.HardwareFunctionality, lockModule.ZSt
         if (z_pos > self.maximum):
             z_pos = self.maximum
         self.z_position = z_pos
+
+        voltageOutput = self.z_position*self.microns_to_volts
+
+        if voltageOutput > 10:
+            voltageOutput = 10
+        elif voltageOutput < -10:
+            voltageOutput = -10
+
         if self.invert_signal:
-            self.ao_fn.output(10 - self.z_position * self.microns_to_volts)
+            self.ao_fn.output(10 - voltageOutput)
         else:
-            self.ao_fn.output(self.z_position * self.microns_to_volts)
+            self.ao_fn.output(voltageOutput)
+
         self.zStagePosition.emit(self.z_position)
         
     def goRelative(self, z_delta):
