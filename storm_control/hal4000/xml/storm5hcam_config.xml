@@ -5,7 +5,7 @@
   <directory type="directory">C:/Data/</directory>
   
   <!-- The setup name -->
-  <setup_name type="string">Storm 5</setup_name>
+  <setup_name type="string">Storm 5a</setup_name>
 
   <!-- The ui type, this is 'classic' or 'detached' -->
   <ui_type type="string">detached</ui_type>
@@ -275,7 +275,7 @@
 	  <locked>
 	    <buffer_length type="int">5</buffer_length>
 	    <offset_threshold type="float">500.0</offset_threshold>
-	    <gain type="float">0.1</gain>
+	    <gain type="float">0.5</gain>
 	  </locked>
 	  <scan>
             <scan_step type="float">1.0</scan_step>
@@ -395,8 +395,8 @@
     
     <!-- Mad City Labs Z piezo -->
     <mcl_zstage>
-      <module_name type="string">storm_control.sc_hardware.ludl.ludlVoltageZModule</module_name>
-      <class_name type="string">LudlVoltageZ</class_name>
+      <module_name type="string">storm_control.sc_hardware.madCityLabs.mclVoltageZModule</module_name>
+      <class_name type="string">MCLVoltageZ</class_name>
 
       <configuration>
 	<parameters>
