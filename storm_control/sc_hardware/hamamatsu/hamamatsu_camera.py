@@ -404,7 +404,7 @@ class HamamatsuCamera(object):
 
             paramlock = DCAMBUF_FRAME(
                     0, 0, 0, n, None, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-            paramlock.size = ctypes.sizeof(paramlock)	
+            paramlock.size = ctypes.sizeof(paramlock)   
 
             # Lock the frame in the camera buffer & get address.
             self.checkStatus(dcam.dcambuf_lockframe(self.camera_handle,
@@ -743,7 +743,7 @@ class HamamatsuCamera(object):
 
         self.number_image_buffers = n_buffers
 
-	
+        
 
         self.checkStatus(dcam.dcambuf_alloc(self.camera_handle,
                                   ctypes.c_int32(self.number_image_buffers)),
