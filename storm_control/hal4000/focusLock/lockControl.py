@@ -150,16 +150,30 @@ class LockControl(QtCore.QObject):
                                                                           offset,
                                                                           power,
                                                                           stage_z))
+
         self.lock_mode.handleNewFrame(frame)
-                
+
     def handleQPDUpdate(self, qpd_dict):
         """
         Basically this is where all the action happens. The current
         mode tells us to move (or not) based on the current QPD signal, 
-        then we poll the QPD again.
+        then we poll the QPD again by calling the getOffset() method.
         """
-        if qpd_dict["is_good"]:
-            self.lock_mode.handleQPDUpdate(qpd_dict)
+        # Even if the current QPD reading is bad the mode needs to know, so
+        # just pass the QPD reading through here.
+        #
+        # Reasons:
+        #
+        # 1. If the QPD is always bad then the mode will have self.qpd_state
+        #    as 'None' and this will be a problem when we query for state
+        #    at the end of a film.
+        #
+        # 2. If the QPD reading goes bad the mode will keep a stale value
+        #    of the QPD state.
+        #
+        self.lock_mode.handleQPDUpdate(qpd_dict)
+
+        # Poll QPD again.
         self.qpd_functionality.getOffset()
 
     def handleTCPMessage(self, message):
