@@ -72,7 +72,8 @@ class GalvoView(halDialog.HalDialog):
         y_freq = self.ui.yFrequencySpinBox.value()
         y_offset = self.ui.yOffsetSpinBox.value()
 
-        if not (((x_freq % y_freq) == 0) or ((y_freq % x_freq) == 0)):
+        if y_freq != 0 and x_freq != 0 and \
+                not (((x_freq % y_freq) == 0) or ((y_freq % x_freq) == 0)):
             print(">> Warning galvo frequencies are not multiples of each other.")
 
         freq = max(x_freq, y_freq)
