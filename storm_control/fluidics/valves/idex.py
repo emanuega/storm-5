@@ -17,6 +17,7 @@ class TitanValve(AbstractValve):
         self.com_port = com_port
         self.verbose = verbose
         self.read_length = 64
+        self.current_position = -1 
 
         self.serial = serial.Serial(port = self.com_port, 
                 baudrate = 9600,
@@ -27,10 +28,15 @@ class TitanValve(AbstractValve):
         self.updateValveStatus()
 
 
+
     def getPortCount(self):
         self.write('N?')
         return int(self.read().strip(string.ascii_letters))
 
+    '''
+    This function can detect errors better. When a valve stops functioning
+    properly, it can be fixed sometimes by sending a home command.
+    '''
     def updateValveStatus(self):
         self.write('P?')
         response = self.read()
