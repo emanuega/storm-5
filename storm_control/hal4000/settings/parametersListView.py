@@ -36,8 +36,9 @@ class ParametersListViewDelegate(QtWidgets.QStyledItemDelegate):
         p_data = getItemData(p_item)
         
         opt = QtWidgets.QStyleOptionButton()
+        opt.state = QtWidgets.QStyle.State_Enabled
         if (p_item.checkState() == QtCore.Qt.Checked):
-            opt.state = QtWidgets.QStyle.State_On
+            opt.state = QtWidgets.QStyle.State_On | opt.state
         if p_data.stale:
             opt.palette.setColor(QtGui.QPalette.WindowText, QtGui.QColor(255,0,0))
         opt.rect = option.rect
@@ -103,6 +104,8 @@ class ParametersMVC(QtWidgets.QListView):
         q_item = QtGui.QStandardItem(name)
         q_item.setData(ParametersItemData(parameters = parameters))
         q_item.setCheckable(True)
+        
+        self.setToolTip(q_item)
         self.model.insertRow(0, q_item)
 
         # The first parameter in is the default parameters
@@ -176,6 +179,7 @@ class ParametersMVC(QtWidgets.QListView):
     def handleDuplicate(self, boolean):
         dup_item = QtGui.QStandardItem(self.rc_item.text())
         dup_item.setData(ParametersItemData(getItemData(self.rc_item).parameters.copy()))
+        self.setToolTip(dup_item)
         row = self.model.indexFromItem(self.rc_item).row()
         self.model.insertRow(row, dup_item)
 
@@ -191,7 +195,6 @@ class ParametersMVC(QtWidgets.QListView):
         #
         data = getItemData(self.rc_item)
         self.saveParameters.emit(data.parameters)
-        data.stale = False
 
     def mousePressEvent(self, event):
         if (event.button() == QtCore.Qt.RightButton):
@@ -233,12 +236,23 @@ class ParametersMVC(QtWidgets.QListView):
     def setRCParametersName(self, name):
         self.rc_item.setText(name)
                 
-    def setRCParametersStale(self):
-        getItemData(self.rc_item).stale = True
+    def setRCParametersStale(self, is_stale):
+        getItemData(self.rc_item).stale = is_stale
 
     def setItemParameters(self, q_item, parameters):
         getItemData(q_item).parameters = parameters
 
+    def setToolTip(self, q_item):
+        parameters = self.getItemParameters(q_item)
+
+        ttip = "Right click to edit"
+        if (parameters.has("parameters_file")):
+            ttip += "\n" + parameters.get("parameters_file")
+        q_item.setToolTip(ttip)
+
+    def updateRCToolTip(self):
+        self.setToolTip(self.rc_item)
+        
 
 class ParametersStandardItemModel(QtGui.QStandardItemModel):
 

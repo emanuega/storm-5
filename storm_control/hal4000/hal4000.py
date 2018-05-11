@@ -119,7 +119,7 @@ class HalView(QtWidgets.QMainWindow):
 
     def __init__(self, module_name = None, module_params = None, qt_settings = None, **kwds):
         super().__init__(**kwds)
-
+                
         self.close_now = False
         self.close_timer = QtCore.QTimer(self)
         self.film_directory = module_params.get("directory")
@@ -336,7 +336,6 @@ class ClassicView(HalView):
         self.classic_view = True
         super().__init__(**kwds)
 
-
 class DetachedView(HalView):
     """
     The 'detached' main window view. This includes a record
@@ -378,6 +377,7 @@ class HalCore(QtCore.QObject):
         self.qt_settings = QtCore.QSettings("storm-control", "hal4000" + config.get("setup_name").lower())
         self.queued_messages = deque()
         self.queued_messages_timer = QtCore.QTimer(self)
+        self.running = True # This is solely for the benefit of unit tests.
         self.sent_messages = []
         self.strict = config.get("strict", False)
 
@@ -523,13 +523,32 @@ class HalCore(QtCore.QObject):
         self.handleMessage(halMessage.chainMessages(self.handleMessage,
                                                     message_chain))
 
+    def close(self):
+        """
+        This is called by qtbot at the end of a test.
+        """
+        self.cleanUp()
+        
     def cleanUp(self):
         for module in self.modules:
             module.cleanUp(self.qt_settings)
         print("Waiting for QThreadPool to finish.")
         halModule.threadpool.waitForDone()
+        self.running = False
         print(" Dave? What are you doing Dave?")
         print("  ...")
+
+    def findChild(self, qt_type, name, options = QtCore.Qt.FindChildrenRecursively):
+        """
+        Overwrite the QT version as the 'child' will be (hopefully) be in one of
+        the modules.
+        """
+        for module in self.modules:
+            print(module)
+            m_child = module.findChild(qt_type, name, options)
+            if m_child is not None:
+                return m_child
+        assert False, "UI element " + name + " not found."
 
     def handleErrors(self, message):
         """

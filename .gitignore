@@ -11,6 +11,7 @@
 *.inf
 *.off
 *.power
+/storm_control/test/data/*.xml
 
 ############
 ## Windows
@@ -25,9 +26,11 @@ Desktop.ini
 #####
 ## C
 #####
+*.a
 *.o
 *.so
 *.so.*
+*.os
 
 #############
 ## Python
@@ -75,3 +78,4 @@ proguard/
 
 # Metadata
 .metadata
+

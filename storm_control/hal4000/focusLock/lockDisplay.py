@@ -518,12 +518,20 @@ class QQPDOffsetDisplay(QOffsetDisplay):
         super().__init__(**kwds)
         self.q_label = q_label
 
+        self.update_timer = QtCore.QTimer(self)
+        self.update_timer.setInterval(100)
+        self.update_timer.timeout.connect(self.handleUpdateTimer)
+        self.update_timer.start()
+        
     def handleGoodLock(self, good_lock):
         if good_lock:
             self.bar_color = QtGui.QColor(0, 255, 0, 150)
         else:
             self.bar_color = QtGui.QColor(0, 0, 0, 150)
 
+    def handleUpdateTimer(self):
+        self.q_label.setText("{0:.1f}".format(self.value))
+                
     def setFunctionality(self, functionality):
         super().setFunctionality(functionality)
         self.has_center_bar = self.functionality.getParameter("offset_has_center_bar")
@@ -536,11 +544,9 @@ class QQPDOffsetDisplay(QOffsetDisplay):
         self.functionality.qpdUpdate.connect(self.updateValue)
 
     def updateValue(self, qpd_dict):
-        if self.isEnabled():
+        if self.isEnabled() and qpd_dict["is_good"]:
             value = 1000.0 * qpd_dict["offset"]
             super().updateValue(value)
-            self.q_label.setText("{0:.1f}".format(value))
-
         
 class QQPDSumDisplay(QStatusDisplay):
     """
@@ -549,6 +555,14 @@ class QQPDSumDisplay(QStatusDisplay):
     def __init__(self, q_label = None, **kwds):
         super().__init__(**kwds)
         self.q_label = q_label
+
+        self.update_timer = QtCore.QTimer(self)
+        self.update_timer.setInterval(100)
+        self.update_timer.timeout.connect(self.handleUpdateTimer)
+        self.update_timer.start()
+        
+    def handleUpdateTimer(self):
+        self.q_label.setText("{0:.1f}".format(self.value))
 
     def paintEvent(self, event):
         if self.functionality is None:
@@ -582,7 +596,7 @@ class QQPDSumDisplay(QStatusDisplay):
         painter.setBrush(color)
         painter.drawRect(2, self.height() - self.convert(self.value),
                          self.width() - 5, self.convert(self.value))
-
+            
     def setFunctionality(self, functionality):
         super().setFunctionality(functionality)
         self.scale_max = self.functionality.getParameter("sum_maximum")
@@ -599,7 +613,6 @@ class QQPDSumDisplay(QStatusDisplay):
         if self.isEnabled():
             value = qpd_dict["sum"]
             super().updateValue(value)
-            self.q_label.setText("{0:.1f}".format(value))
 
         
 class QStageDisplay(QOffsetDisplay):
@@ -611,13 +624,21 @@ class QStageDisplay(QOffsetDisplay):
         self.jump_signal = jump_signal
         self.jump_size = None
         self.q_label = q_label
+
+        self.update_timer = QtCore.QTimer(self)
+        self.update_timer.setInterval(100)
+        self.update_timer.timeout.connect(self.handleUpdateTimer)
+        self.update_timer.start()
         
         self.adjust_mode = False
         self.tooltips = ["click to adjust", "use scroll wheel to move stage"]
 
         self.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.setToolTip(self.tooltips[0])
-
+        
+    def handleUpdateTimer(self):
+        self.q_label.setText("{0:.3f}".format(self.value))
+        
     def paintBackground(self, painter):
         if self.adjust_mode:
             color = QtGui.QColor(180, 180, 180)
@@ -662,7 +683,6 @@ class QStageDisplay(QOffsetDisplay):
     def updateValue(self, value):
         if self.isEnabled():
             super().updateValue(value)
-            self.q_label.setText("{0:.3f}".format(value))
 
     def wheelEvent(self, event):
         """

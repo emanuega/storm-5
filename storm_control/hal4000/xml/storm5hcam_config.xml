@@ -193,7 +193,7 @@
 	  <camera_fire_pin type="string">/Dev3/PFI0</camera_fire_pin>
 	  <counter type="string">/Dev3/ctr0</counter>
 	  <counter_out type="string">/Dev3/PFI12</counter_out>
-	  <rising_edge type="boolean">True</rising_edge>
+	  <rising_edge type="boolean">False</rising_edge>
 	</timing>
 
 	<!-- These are the things that we provide DAQ functionality for.
@@ -275,7 +275,8 @@
 	  <locked>
 	    <buffer_length type="int">5</buffer_length>
 	    <offset_threshold type="float">500.0</offset_threshold>
-	    <gain type="float">0.8</gain>
+	    <lock_gain type="float">0.8</lock_gain>
+	    <lock_gain_max type="float">0.8</lock_gain_max>
 	  </locked>
 	  <scan>
             <scan_step type="float">1.0</scan_step>
@@ -395,8 +396,8 @@
     
     <!-- Mad City Labs Z piezo -->
     <mcl_zstage>
-      <module_name type="string">storm_control.sc_hardware.madCityLabs.mclVoltageZModule</module_name>
-      <class_name type="string">MCLVoltageZ</class_name>
+      <module_name type="string">storm_control.sc_hardware.ludl.ludlVoltageZModule</module_name>
+      <class_name type="string">LudlVoltageZ</class_name>
 
       <configuration>
 	<parameters>
@@ -456,7 +457,7 @@
 	<uc480_dll type="string">c:/windows/system32/uc480_64.dll</uc480_dll>
 	<x_width type="int">700</x_width>
 	<y_width type="int">100</y_width>
-	<units_to_microns type="float">0.135</units_to_microns>
+	<units_to_microns type="float">0.007</units_to_microns>
       </configuration>
     </uc480_camera>
 

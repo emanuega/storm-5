@@ -21,14 +21,33 @@ import time
 
 import storm_control.sc_library.hdebug as hdebug
 
-# import fitting libraries.
+# Import fitting libraries.
+
+# Numpy fitter, this should always be available.
 import storm_control.sc_hardware.utility.np_lock_peak_finder as npLPF
 
+# Finding/fitting using the storm-analysis project.
+saLPF = None
 try:
     import storm_control.sc_hardware.utility.sa_lock_peak_finder as saLPF
-except ModuleNotFoundError:
+except ModuleNotFoundError as mnfe:
+    print(">> Warning! Storm analysis lock fitting module not found. <<")
+    print(mnfe)
     pass
 
+# Finding using the storm-analysis project, fitting using image correlation.
+cl2DG = None
+try:
+    import storm_control.sc_hardware.utility.corr_lock_c2dg as cl2DG
+except ModuleNotFoundError as mnfe:
+    # Only need one warning about the lack of storm-analysis.
+    pass
+except OSError as ose:
+    print(">> Warning! Correlation lock fitting C library not found. <<")
+    print(ose)
+    pass
+
+    
 uc480 = None
 
 Handle = ctypes.wintypes.HANDLE
@@ -252,7 +271,7 @@ class Camera(Handle):
         if verbose:
             print("uc480: Set frame rate to {0:.1f} FPS".format(new_fps.value))
 
-    def setPixelClock(self, pixel_clock_MHz = 30):
+    def setPixelClock(self, pixel_clock_MHz):
         """
         43MHz seems to be the max for this camera?
         """
@@ -294,16 +313,19 @@ class CameraQPD(object):
     pixels is returned as the focus lock sum.
     """
     def __init__(self,
+                 allow_single_fits = False,
                  background = None,                 
                  camera_id = 1,
                  ini_file = None,
                  offset_file = None,
+                 pixel_clock = None,
                  sigma = None,
                  x_width = None,
                  y_width = None,
                  **kwds):
         super().__init__(**kwds)
-        
+
+        self.allow_single_fits = allow_single_fits
         self.background = background
         self.fit_mode = 1
         self.fit_size = int(1.5 * sigma)
@@ -336,7 +358,7 @@ class CameraQPD(object):
         self.setAOI()
 
         # Run at maximum speed.
-        self.cam.setPixelClock()
+        self.cam.setPixelClock(pixel_clock)
         self.cam.setFrameRate(verbose = True)
 
         # Some derived parameters
@@ -420,23 +442,22 @@ class CameraQPD(object):
 
     def qpdScan(self, reps = 4):
         """
-        Returns sum and offset data from the camera in the 
-        same format as what would be measured using a QPD.
+        Returns [power, offset, is_good]
         """
         power_total = 0.0
         offset_total = 0.0
         good_total = 0.0
         for i in range(reps):
-            data = self.singleQpdScan()
-            if (data[0] > 0):
-                power_total += data[0]
-                offset_total += data[1]
-                good_total += 1.0
+            [power, n_good, offset] = self.singleQpdScan()
+            power_total += power
+            good_total += n_good
+            offset_total += offset
+            
+        power_total = power_total/float(reps)
         if (good_total > 0):
-            inv_good = 1.0/good_total
-            return [power_total * inv_good, offset_total * inv_good, 0]
+            return [power_total, offset_total/good_total, True]
         else:
-            return [0, 0, 0]
+            return [power_total, 0, False]
 
     def setAOI(self):
         """
@@ -459,33 +480,19 @@ class CameraQPD(object):
     def singleQpdScan(self):
         """
         Perform a single measurement of the focus lock offset and camera sum signal.
+
+        Returns [power, total_good, offset]
         """
         data = self.capture().copy()
 
-        if (self.background > 0): # Toggle between sum signal calculations
-            power = numpy.sum(data.astype(numpy.int64)) - self.background
-        else:
-            power = numpy.max(data)
+        # The power number is the sum over the camera AOI minus the background.
+        power = numpy.sum(data.astype(numpy.int64)) - self.background
         
-        if (power < 25):
-            #
-            # This hack is because if you bombard the USB camera with 
-            # update requests too frequently it will freeze. Or so I
-            # believe, not sure if this is actually true.
-            #
-            # It still seems to freeze?
-            #
-            time.sleep(0.05)
-            return [0, 0, 0]
-
+        # (Simple) Check for duplicate frames.
         if (power == self.last_power):
-            #
-            # Or for reasons unclear it will keep returning the same
-            # frame?
-            #        
-            print("> UC480-QPD: Duplicate image detected!")
-            time.sleep(0.1)
-            return [0, 0, 0]
+            #print("> UC480-QPD: Duplicate image detected!")
+            time.sleep(0.05)
+            return [self.last_power, 0, 0]
 
         self.last_power = power
 
@@ -493,6 +500,7 @@ class CameraQPD(object):
         # In the event that only beam spot can be fit then this will
         # attempt to compensate. However this assumes that the two
         # spots are centered across the mid-line of camera ROI.
+        #
         if (self.fit_mode == 1):
             [total_good, dist1, dist2] = self.doFit(data)
 
@@ -501,16 +509,133 @@ class CameraQPD(object):
             [total_good, dist1, dist2] = self.doMoments(data)
                         
         # Calculate offset.
+        #
+
+        # No good fits.
         if (total_good == 0):
-            offset = 0
+            return [power, 0.0, 0.0]
+
+        # One good fit.
         elif (total_good == 1):
-            offset = ((dist1 + dist2) - 0.5*self.zero_dist)
+            if self.allow_single_fits:
+                return [power, 1.0, ((dist1 + dist2) - 0.5*self.zero_dist)]
+            else:
+                return [power, 0.0, 0.0]
+
+        # Two good fits. This gets twice the weight of one good fit
+        # if we are averaging.
         else:
-            offset = ((dist1 + dist2) - self.zero_dist)
-
-        return [power, offset, 0]
+            return [power, 2.0, 2.0*((dist1 + dist2) - self.zero_dist)]
 
 
+class CameraQPDCorrFit(CameraQPD):
+    """
+    This version uses storm-analyis to do the peak finding and
+    image correlation to do the peak fitting.
+    """
+    def __init__(self, **kwds):
+        super().__init__(**kwds)
+
+        assert (cl2DG is not None), "Correlation fitting not available."
+
+        self.fit_hl = None
+        self.fit_hr = None
+
+    def doFit(self, data):
+        dist1 = 0
+        dist2 = 0
+        self.x_off1 = 0.0
+        self.y_off1 = 0.0
+        self.x_off2 = 0.0
+        self.y_off2 = 0.0
+
+        if self.fit_hl is None:
+            roi_size = int(2.0 * self.sigma)
+            self.fit_hl = cl2DG.CorrLockFitter(roi_size = roi_size,
+                                               sigma = self.sigma,
+                                               threshold = 10)
+            self.fit_hr = cl2DG.CorrLockFitter(roi_size = roi_size,
+                                               sigma = self.sigma,
+                                               threshold = 10)
+
+        total_good = 0
+        [x1, y1, status] = self.fit_hl.findFitPeak(data[:,:self.half_x])
+        if status:
+            total_good += 1
+            self.x_off1 = x1 - self.half_y
+            self.y_off1 = y1 - self.half_x
+            dist1 = abs(self.y_off1)
+                
+        [x2, y2, status] = self.fit_hr.findFitPeak(data[:,-self.half_x:])
+        if status:
+            total_good += 1
+            self.x_off2 = x2 - self.half_y
+            self.y_off2 = y2
+            dist2 = abs(self.y_off2)
+
+        return [total_good, dist1, dist2]
+
+    def shutDown(self):
+        super().shutDown()
+        
+        if self.fit_hl is not None:
+            self.fit_hl.cleanup()
+            self.fit_hr.cleanup()
+            
+
+class CameraQPDSAFit(CameraQPD):
+    """
+    This version uses the storm-analysis project to do the fitting.
+    """
+    def __init__(self, **kwds):
+        super().__init__(**kwds)
+
+        assert (saLPF is not None), "Storm-analysis fitting not available."
+
+        self.fit_hl = None
+        self.fit_hr = None
+
+    def doFit(self, data):
+        dist1 = 0
+        dist2 = 0
+        self.x_off1 = 0.0
+        self.y_off1 = 0.0
+        self.x_off2 = 0.0
+        self.y_off2 = 0.0
+
+        if self.fit_hl is None:
+            self.fit_hl = saLPF.LockPeakFinder(offset = 5.0,
+                                               sigma = self.sigma,
+                                               threshold = 10)
+            self.fit_hr = saLPF.LockPeakFinder(offset = 5.0,
+                                               sigma = self.sigma,
+                                               threshold = 10)
+
+        total_good = 0
+        [x1, y1, status] = self.fit_hl.findFitPeak(data[:,:self.half_x])
+        if status:
+            total_good += 1
+            self.x_off1 = x1 - self.half_y
+            self.y_off1 = y1 - self.half_x
+            dist1 = abs(self.y_off1)
+                
+        [x2, y2, status] = self.fit_hr.findFitPeak(data[:,-self.half_x:])
+        if status:
+            total_good += 1
+            self.x_off2 = x2 - self.half_y
+            self.y_off2 = y2
+            dist2 = abs(self.y_off2)
+
+        return [total_good, dist1, dist2]
+
+    def shutDown(self):
+        super().shutDown()
+        
+        if self.fit_hl is not None:
+            self.fit_hl.cleanup()
+            self.fit_hr.cleanup()
+
+            
 class CameraQPDScipyFit(CameraQPD):
     """
     This version uses scipy to do the fitting.
@@ -572,55 +697,7 @@ class CameraQPDScipyFit(CameraQPD):
             return [False, False, False, False]
 
 
-class CameraQPDSAFit(CameraQPD):
-    """
-    This version uses the storm-analysis project to do the fitting.
-    """
-    def __init__(self, **kwds):
-        super().__init__(**kwds)
 
-        self.fit_hl = None
-        self.fit_hr = None
-
-    def doFit(self, data):
-        dist1 = 0
-        dist2 = 0
-        self.x_off1 = 0.0
-        self.y_off1 = 0.0
-        self.x_off2 = 0.0
-        self.y_off2 = 0.0
-
-        if self.fit_hl is None:
-            self.fit_hl = saLPF.LockPeakFinder(offset = 5.0,
-                                                        sigma = self.sigma,
-                                                        threshold = 10)
-            self.fit_hr = saLPF.LockPeakFinder(offset = 5.0,
-                                               sigma = self.sigma,
-                                               threshold = 10)
-
-        total_good = 0
-        [x1, y1, status] = self.fit_hl.findFitPeak(data[:,:self.half_x])
-        if status:
-            total_good += 1
-            self.x_off1 = x1 - self.half_y
-            self.y_off1 = y1 - self.half_x
-            dist1 = abs(self.y_off1)
-                
-        [x2, y2, status] = self.fit_hr.findFitPeak(data[:,-self.half_x:])
-        if status:
-            total_good += 1
-            self.x_off2 = x2 - self.half_y
-            self.y_off2 = y2
-            dist2 = abs(self.y_off2)
-
-        return [total_good, dist1, dist2]
-
-    def shutDown(self):
-        super().shutDown()
-        
-        if self.fit_hl is not None:
-            self.fit_hl.cleanup()
-            self.fit_hr.cleanup()
 
         
 # Testing
@@ -631,7 +708,7 @@ if (__name__ == "__main__"):
     loadDLL("c:/windows/system32/uc480_64.dll")
 
     cam = Camera(1)
-    reps = 50
+    reps = 1000
 
     if False:
         cam.setAOI(772, 566, 200, 200)
@@ -658,18 +735,20 @@ if (__name__ == "__main__"):
         print("time:", time.time() - st)
         cam.stopCapture()
 
-    if False:
-        cam.setAOI(100, 100, 300, 300)
-        cam.setPixelClock()
-        cam.setFrameRate()
+    if True:
+        cam.setAOI(100, 100, 700, 100)
+        cam.setPixelClock(25)
+        cam.setFrameRate(verbose = True)
         st = time.time()
+        print("starting")
         for i in range(reps):
             #print i
             image = cam.captureImage()
-            print(i, numpy.sum(image))
-        print("time:", time.time() - st)
+            #print(i, numpy.sum(image))
+        elapsed_time = time.time() - st
+        print("{0:0d} frames in {1:.3f} seconds, {2:.3f} FPS".format(reps, elapsed_time, reps/elapsed_time))
 
-    if True:
+    if False:
         image = cam.captureImage()
         im = Image.fromarray(image)
         im.save("temp.png")

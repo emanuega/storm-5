@@ -27,16 +27,10 @@ class TitanValve(AbstractValve):
         self.port_count = self.getPortCount()
         self.updateValveStatus()
 
-
-
     def getPortCount(self):
         self.write('N?')
         return int(self.read().strip(string.ascii_letters))
 
-    '''
-    This function can detect errors better. When a valve stops functioning
-    properly, it can be fixed sometimes by sending a home command.
-    '''
     def updateValveStatus(self):
         self.write('P?')
         response = self.read()

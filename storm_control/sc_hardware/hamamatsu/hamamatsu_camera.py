@@ -212,8 +212,9 @@ dcam = ctypes.windll.dcamapi
 
 paraminit = DCAMAPI_INIT(0, 0, 0, 0, None, None) 
 paraminit.size = ctypes.sizeof(paraminit)
-if (dcam.dcamapi_init(ctypes.byref(paraminit)) != DCAMERR_NOERROR):
-    raise DCAMException("DCAM initialization failed.")
+error_code = dcam.dcamapi_init(ctypes.byref(paraminit))
+if (error_code != DCAMERR_NOERROR):
+    raise DCAMException("DCAM initialization failed with error code " + str(error_code))
 
 n_cameras = paraminit.iDeviceCount
 
@@ -282,8 +283,6 @@ class HamamatsuCamera(object):
         self.acquisition_mode = "run_till_abort"
         self.number_frames = 0
 
-
-
         # Get camera model.
         self.camera_model = self.getModelInfo(camera_id)
 
@@ -292,15 +291,14 @@ class HamamatsuCamera(object):
         paramopen.size = ctypes.sizeof(paramopen)
         self.checkStatus(dcam.dcamdev_open(ctypes.byref(paramopen)),
                          "dcamdev_open")
-        self.camera_handle = paramopen.hdcam
+        self.camera_handle = ctypes.c_void_p(paramopen.hdcam)
 
         # Set up wait handle
         paramwait = DCAMWAIT_OPEN(0, 0, None, self.camera_handle)
         paramwait.size = ctypes.sizeof(paramwait)
         self.checkStatus(dcam.dcamwait_open(ctypes.byref(paramwait)), 
                 "dcamwait_open")
-        self.wait_handle = paramwait.hwait
-
+        self.wait_handle = ctypes.c_void_p(paramwait.hwait)
 
         # Get camera properties.
         self.properties = self.getCameraProperties()
@@ -358,8 +356,8 @@ class HamamatsuCamera(object):
 
         # Reset to the start.
         ret = dcam.dcamprop_getnextid(self.camera_handle,
-                                          ctypes.byref(prop_id),
-                                          ctypes.c_int32(DCAMPROP_OPTION_NEAREST))
+                                      ctypes.byref(prop_id),
+                                      ctypes.c_uint32(DCAMPROP_OPTION_NEAREST))
         if (ret != 0) and (ret != DCAMERR_NOERROR):
             self.checkStatus(ret, "dcamprop_getnextid")
 
@@ -845,15 +843,18 @@ class HamamatsuCameraMR(HamamatsuCamera):
         """
         self.captureSetup()
 
-
-        #
-        # Allocate new image buffers if necessary.
-        # Allocate as many frames as can fit in 2GB of memory.
+        # Allocate new image buffers if necessary. This will allocate
+        # as many frames as can fit in 2GB of memory, or 2000 frames,
+        # which ever is smaller. The problem is that if the frame size
+        # is small than a lot of buffers can fit in 2GB. Assuming that
+        # the camera maximum speed is something like 1KHz 2000 frames
+        # should be enough for 2 seconds of storage, which will hopefully
+        # be long enough.
         #
         if (self.old_frame_bytes != self.frame_bytes) or \
                 (self.acquisition_mode is "fixed_length"):
 
-            n_buffers = int((2.0 * 1024 * 1024 * 1024)/self.frame_bytes)
+            n_buffers = min(int((2.0 * 1024 * 1024 * 1024)/self.frame_bytes), 2000)
             if self.acquisition_mode is "fixed_length":
                 self.number_image_buffers = self.number_frames
             else:
@@ -934,7 +935,7 @@ if (__name__ == "__main__"):
         print("camera 0 model:", hcam.getModelInfo(0))
 
         # List support properties.
-        if True:
+        if False:
             print("Supported properties:")
             print()
             props = hcam.getProperties()

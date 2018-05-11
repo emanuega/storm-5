@@ -6,14 +6,20 @@
  * which enable us to take continuous movies instead of grabbing
  * a series of random images.
  *
- * Hazen 12/16
+ * Compile using scons and storm-control/SConstruct.
+ *
+ * $ cd storm-control
+ * $ path/to/scons.bat 
+ *
+ * Hazen 03/18
+ *
  *
  * Compilation (windows / MinGW):
  *
  * c:\MinGW\bin\gcc.exe -c spinshim.c -I"C:\Program Files\Point Grey Research\Spinnaker\include\spinc" -I"C:\MinGW\x86_64-w64-mingw32\include"
  * c:\MinGW\bin\gcc.exe -shared -o spinshim.dll spinshim.o -L"C:\Program Files\Point Grey Research\Spinnaker\bin64\vs2013" -lSpinnakerC_v120
  *
- * See also : compile_bat.bat
+ * Then copy the dll to storm-control/storm_control/c_libraries
  */
 
 #include <stdint.h>
@@ -160,7 +166,7 @@ int getNextImage(imageEvent *ie, image *im)
    */
   switch (im->pixel_format){
 
-  case PixelFormat_Mono8: // 3
+  case PixelFormat_Mono8:
   
     /* Convert Mono8 to 16 bit unsigned integer. */
     data8 = (uint8_t *)ie_im->data;
@@ -170,7 +176,7 @@ int getNextImage(imageEvent *ie, image *im)
     }
     break;
 
-  case PixelFormat_Mono12p : // 8
+  case PixelFormat_Mono12p :
     /* Convert Mono12p to 16 bit unsigned integer. */    
     data8 = (uint8_t *)ie_im->data;
     hal_image = (uint16_t *)im->data;
@@ -191,7 +197,7 @@ int getNextImage(imageEvent *ie, image *im)
     }
     break;
 
-  case PixelFormat_Mono16: // 10
+  case PixelFormat_Mono16:
     /* 
      * Convert Mono16 to 16 bit unsigned integer.
      *
@@ -204,7 +210,7 @@ int getNextImage(imageEvent *ie, image *im)
     }
     break;
 
-  case PixelFormat_Mono12Packed : // 214
+  case PixelFormat_Mono12Packed :
     /* Convert Mono12Packed to 16 bit unsigned integer. */    
     data8 = (uint8_t *)ie_im->data;
     hal_image = (uint16_t *)im->data;
@@ -353,10 +359,7 @@ void onImageEvent(spinImage h_image, void *user_data)
  */
 int releaseImageEvent(spinCamera hcam, imageEvent *ie)
 {
-  int i;
   spinError err;
-
-  image *im;
 
   /* 
    * Free image storage. Don't free the data elements of the images as that
