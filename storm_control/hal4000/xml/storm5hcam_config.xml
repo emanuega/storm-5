@@ -209,7 +209,7 @@
 
 	<ilm750>
 	  <do_task>
-	    <source type="string">/Dev3/port0/line1</source>
+	    <source type="string">/Dev3/port0/line8</source>
 	  </do_task>
 	</ilm750>
 
@@ -221,32 +221,32 @@
 
 	<ilm560>
 	  <do_task>
-	    <source type="string">/Dev3/port0/line3</source>
+	    <source type="string">/Dev3/port0/line1</source>
 	  </do_task>
 	</ilm560>
 
 	<ilm488>
 	  <do_task>
-	    <source type="string">/Dev3/port0/line4</source>
+	    <source type="string">/Dev3/port0/line3</source>
 	  </do_task>
 	</ilm488>
 
 	<ilm405>
 	  <do_task>
-	    <source type="string">/Dev3/port0/line5</source>
+	    <source type="string">/Dev3/port0/line9</source>
 	  </do_task>
 	</ilm405>
 
         <ir_laser>
           <ct_task>
             <source type="string">/Dev3/ctr2</source>
-            <frequency type="float">10000</frequency>
+            <frequency type="float">50000</frequency>
           </ct_task>
         </ir_laser>
 
 	<ilmWhite>
 	  <do_task>
-	    <source type="string">/Dev3/port0/line2</source>
+	    <source type="string">/Dev3/port0/line10</source>
 	  </do_task>
 	</ilmWhite>
 
@@ -274,13 +274,13 @@
 	  </find_sum>
 	  <locked>
 	    <buffer_length type="int">5</buffer_length>
-	    <offset_threshold type="float">500.0</offset_threshold>
+	    <offset_threshold type="float">50.0</offset_threshold>
 	    <lock_gain type="float">0.8</lock_gain>
 	    <lock_gain_max type="float">0.8</lock_gain_max>
 	  </locked>
 	  <scan>
             <scan_step type="float">1.0</scan_step>
-	    <offset_threshold type="float">10000.0</offset_threshold>
+	    <offset_threshold type="float">100000.0</offset_threshold>
           </scan>
 	  <jump_size type="float">0.1</jump_size>
 	</parameters>
