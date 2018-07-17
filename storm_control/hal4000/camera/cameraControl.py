@@ -382,7 +382,6 @@ class HWCameraControl(CameraControl):
         #       only then set self.running. Otherwise HAL might think the
         #       camera is running when it is not.
         #
-        print("CameraControl Run()")
         self.camera.startAcquisition()
         self.running = True
         self.thread_started = True
@@ -390,7 +389,6 @@ class HWCameraControl(CameraControl):
 
             # Get data from camera and create frame objects.
             self.camera_mutex.lock()
-            print("CameraControl mutex locked getting frames")
             [frames, frame_size] = self.camera.getFrames()
             self.camera_mutex.unlock()
 
@@ -413,7 +411,6 @@ class HWCameraControl(CameraControl):
                             self.running = False
                             
                 # Emit new data signal.
-                print("Emitting frame data")
                 self.newData.emit(frame_data)
             self.msleep(5)
 
