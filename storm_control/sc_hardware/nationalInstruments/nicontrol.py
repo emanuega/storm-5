@@ -207,7 +207,11 @@ class AnalogWaveformOutput(NIDAQTask):
             rising = PyDAQmx.DAQmx_Val_Rising
         else:
             rising = PyDAQmx.DAQmx_Val_Falling
-        
+       
+        for cw in waveforms:
+            cw[cw<self.min_val] = self.min_val
+            cw[cw>self.max_val] = self.max_val
+
         with getLock():
             self.CfgSampClkTiming(clock,
                                   sample_rate,
